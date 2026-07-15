@@ -29,6 +29,11 @@ def run_pipeline(article_text: str, style: str = "chronicle") -> dict:
 
     # ① 사실 추출 — 이후 모든 단계의 불변 계약
     facts = _stage("① 사실 추출", extract_facts, article_text)
+    if not facts.get("events"):
+        raise RuntimeError(
+            "[① 사실 추출] 기사에서 사건을 추출하지 못했습니다. "
+            "본문이 제대로 입력됐는지 확인해주세요 (URL 추출 실패 시 붙여넣기로 시도)."
+        )
 
     # ② 서사 설계
     arc = _stage("② 서사 설계", design_arc, facts, style)

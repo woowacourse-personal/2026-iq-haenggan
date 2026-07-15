@@ -1,8 +1,8 @@
 """LLM 클라이언트 래퍼.
 
 - 단계별 모델 라우팅: 추출/검증(빠르고 저렴) vs 각색(고품질)
-- 구조화 출력: tool use 강제로 API가 파싱한 dict를 직접 받는다.
-  (모델이 텍스트로 JSON을 쓰다 따옴표 이스케이프를 빠뜨리는 문제를 원천 차단 — v0.1.2)
+- 구조화 출력: tool use 강제 + 단계별 JSON 스키마 명시로 유효한 구조를 보장한다.
+  (v0.1.2: 빈 스키마로는 모델이 빈 객체를 반환할 수 있어, 필수 필드가 담긴 스키마를 단계별로 전달)
 """
 
 import json
@@ -44,15 +44,16 @@ def complete(
 
 def complete_json(
     prompt: str,
+    schema: dict,
     system: str = "",
     model: str | None = None,
     max_tokens: int = 4000,
 ) -> dict:
-    """구조화 출력 호출 — 유효한 JSON이 보장된다.
+    """구조화 출력 호출 — 유효한 JSON 구조가 보장된다.
 
-    tool use를 강제하면 모델의 구조화 출력을 API가 직접 파싱해 dict로 전달한다.
-    모델이 JSON을 '텍스트로 쓰는' 과정이 없으므로,
-    문자열 안 따옴표/줄바꿈 이스케이프 누락으로 인한 파싱 오류가 원천적으로 발생하지 않는다.
+    tool use를 강제하고, 채워야 할 스키마(필수 필드 포함)를 input_schema로 전달한다.
+    API가 구조화 출력을 직접 파싱해 dict로 반환하므로 이스케이프 오류가 원천 차단되고,
+    스키마 덕분에 모델이 빈 객체를 반환하는 문제도 방지된다.
     """
     response = client().messages.create(
         model=model or SMART_MODEL,
@@ -62,14 +63,16 @@ def complete_json(
         tools=[
             {
                 "name": "emit_result",
-                "description": "프롬프트가 요구한 스키마의 구조화된 결과를 그대로 전달한다.",
-                "input_schema": {"type": "object"},
+                "description": "분석 결과를 지정된 스키마 구조로 전달한다. 모든 필수 필드를 채워야 한다.",
+                "input_schema": schema,
             }
         ],
         tool_choice={"type": "tool", "name": "emit_result"},
     )
     for block in response.content:
         if block.type == "tool_use":
+            if not block.input:
+                raise ValueError("모델이 빈 결과를 반환했습니다.")
             return block.input
     # 폴백: 혹시 텍스트로 왔을 경우 기존 파서 시도
     text = "".join(b.text for b in response.content if b.type == "text")
@@ -87,5 +90,4 @@ def parse_json(text: str) -> dict:
     try:
         return json.loads(snippet)
     except json.JSONDecodeError:
-        # 문자열 내부의 이스케이프 안 된 줄바꿈/탭을 허용하는 관대 모드
         return json.loads(snippet, strict=False)
