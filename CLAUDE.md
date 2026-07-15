@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-## 프로젝트: 행간 (구 썰풀이)
+## 프로젝트: 갈피 (구 행간 ← 썰풀이)
 
 > 글이 어려운 건 독해력 탓이 아니라, 글이 전제하는 문맥이 독자에게 없기 때문이다.
 
@@ -44,7 +44,7 @@
 
 - 오케스트레이션: `app/pipeline/__init__.py` — `_stage()` 래퍼가 실패 시 단계명을 에러에 붙임. 이 패턴 유지.
 - LLM 래퍼: `app/llm.py` — `complete()`(자유 텍스트), `complete_json(prompt, schema, ...)`(tool use 강제).
-  모델은 env로 오버라이드 가능 (`HAENGGAN_SMART_MODEL`, `HAENGGAN_FAST_MODEL`).
+  모델은 env로 오버라이드 가능 (`GALPI_SMART_MODEL`, `GALPI_FAST_MODEL`).
 - 서버: `app/main.py` — FastAPI. `POST /api/transform {text|url, level}`(한 번에 응답),
   `POST /api/transform/stream`(SSE: `stage {stage, status}` 이벤트 → `result` 또는 `error`).
   파이프라인은 스레드에서 돌고 이벤트는 큐로 중계. 입력 검증은 `resolve_document()` 공용, 검증 실패는 스트림 전 400.
@@ -87,13 +87,17 @@ python -m pytest tests/ -q
   **타겟을 뉴스(국제정세·경제 우선)로 좁힘.** 프롬프트를 사건 연쇄 중심으로 특화.
   주의: 최신 사건 배경은 모델 지식 컷오프에 걸릴 수 있음 — contextualize 절대 규칙 6
   ("모르면 지어내지 말고 아는 범위까지만")이 방어선, 중기적으로 web search 그라운딩 검토.
+  리네이밍 행간 → **갈피** ("갈피를 못 잡겠다"+책갈피 이중 의미), 컬러를 프레스 블루로
+  (형광펜 노랑은 하이라이트 전용), env 접두사 HAENGGAN_ → GALPI_, 레포 2026-iq-galpi.
 
 ## 컨벤션
 
 - 커밋 메시지: **한국어**, conventional commits (`feat:`, `fix:`, `chore:`). `!` 포함 시 zsh에서 작은따옴표 필요.
 - 파이썬: 표준 라이브러리 + requirements.txt 범위 내. 타입 힌트 사용. 주석은 "왜"만.
 - 프롬프트 수정 시: 스키마와 프롬프트 본문이 일치하는지 확인 (스키마에 필드 추가하면 프롬프트에도 설명 추가).
-- UI 수정 시: 다크 배경 + 종이 카드 + 형광펜(--marker) 아이덴티티 유지. localStorage 사용 금지 아님(로컬 앱).
+- UI 수정 시: 다크 배경 + 종이 카드(신문 1면 조판) 아이덴티티 유지.
+  컬러: 프레스 블루(--press 다크용 / --press-ink 종이용 / --press-btn 버튼)가 브랜드·구조 요소,
+  형광펜 노랑(--marker)은 텍스트 하이라이트(용어 밑줄·테이크어웨이) 전용. localStorage 사용 금지 아님(로컬 앱).
 
 ## 로드맵 (우선순위 순)
 

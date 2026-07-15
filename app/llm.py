@@ -22,8 +22,8 @@ def client() -> Anthropic:
 
 
 # 비용 라우팅: 기획서 §5 — ①추출·④검증은 저렴한 모델, ③각색만 고품질 모델
-SMART_MODEL = os.getenv("HAENGGAN_SMART_MODEL", "claude-sonnet-4-6")
-FAST_MODEL = os.getenv("HAENGGAN_FAST_MODEL", "claude-haiku-4-5-20251001")
+SMART_MODEL = os.getenv("GALPI_SMART_MODEL", "claude-sonnet-4-6")
+FAST_MODEL = os.getenv("GALPI_FAST_MODEL", "claude-haiku-4-5-20251001")
 
 
 def complete(

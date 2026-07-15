@@ -91,7 +91,7 @@ def test_파이프라인_실패는_500으로_감싼다(monkeypatch):
 def test_루트는_UI를_반환한다():
     res = client.get("/")
     assert res.status_code == 200
-    assert "행간" in res.text
+    assert "갈피" in res.text
 
 
 # ── SSE 스트림 (/api/transform/stream) ───────────────────────────────
