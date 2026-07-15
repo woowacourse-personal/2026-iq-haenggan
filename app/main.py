@@ -14,6 +14,7 @@ import httpx
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel
 
@@ -22,6 +23,14 @@ load_dotenv()  # .env의 ANTHROPIC_API_KEY 로드 (llm.py import 전에 실행�
 from app.pipeline import run_pipeline  # noqa: E402
 
 app = FastAPI(title="갈피 — 읽기 전 문맥 브리핑", version="0.4.0")
+
+# 크롬 확장 사이드패널의 호출 허용 — 확장 오리진만, 그 외 사이트 오리진은 불허 (로컬 서버 전제)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origin_regex=r"^chrome-extension://[a-p]{32}$",
+    allow_methods=["POST", "GET"],
+    allow_headers=["Content-Type"],
+)
 
 STATIC_DIR = Path(__file__).parent / "static"
 

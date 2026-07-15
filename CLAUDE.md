@@ -48,8 +48,11 @@
 - 서버: `app/main.py` — FastAPI. `POST /api/transform {text|url, level}`(한 번에 응답),
   `POST /api/transform/stream`(SSE: `stage {stage, status}` 이벤트 → `result` 또는 `error`).
   파이프라인은 스레드에서 돌고 이벤트는 큐로 중계. 입력 검증은 `resolve_document()` 공용, 검증 실패는 스트림 전 400.
-  URL 추출은 BeautifulSoup 베스트에포트.
+  URL 추출은 BeautifulSoup 베스트에포트. CORS는 chrome-extension 오리진만 허용.
 - UI: `app/static/index.html` — 단일 파일 (바닐라 JS). 다크 UI + 종이 카드 + 형광펜 컨셉.
+- 크롬 확장: `extension/` — MV3 사이드패널, 얇은 클라이언트 (본문 추출 → 서버 SSE → 렌더링 + 본문 하이라이트).
+  페이지 주입 함수(pageExtract/pageHighlight/pageScrollTo)는 self-contained여야 함 (패널 스코프 참조 불가).
+  API 키 노출 금지 — 확장에서 Anthropic 직접 호출 금지, 반드시 서버 경유 (절대 원칙 취급).
 - 문서: `docs/planning.md`(구 기획서, 히스토리), `experiments/`(프로토타이핑 실험 템플릿).
 
 ## 실행 / 확인
@@ -61,6 +64,8 @@ uvicorn app.main:app --reload   # http://localhost:8000
 
 - API 키: `.env`의 `ANTHROPIC_API_KEY` (절대 커밋 금지, .gitignore에 있음)
 - 전체 파이프라인 1회 실행 ≈ LLM 4~6콜, 1~2분, $0.05~0.15.
+- 크롬 확장: chrome://extensions → 개발자 모드 → "압축해제된 확장 프로그램 로드" → `extension/` 선택.
+  위 로컬 서버가 켜져 있어야 동작. 기사 페이지에서 툴바 아이콘 클릭 → 사이드패널.
 
 ### 테스트 (LLM 호출 없음, 무료·수 초)
 
@@ -105,10 +110,9 @@ python -m pytest tests/ -q
 2. ~~**테스트 도입**: pytest 단위·스키마 회귀·API 검증~~ ✅ 완료 — `tests/`, 실행법은 위 "테스트" 절.
 3. ~~**SSE 진행 표시**~~ ✅ 완료 — `/api/transform/stream` + `run_pipeline(on_event=...)`, UI 램프가 실제 단계와 동기화 (repair 램프는 문제 발견 시에만 표시).
 4. ~~**뉴스 타겟 특화**~~ ✅ 완료 (v0.4) — 프롬프트 사건 연쇄 중심 특화, UI 문구·예시 교체.
-5. **크롬 확장**: 기사 페이지에서 원클릭 브리핑. 확장은 얇은 클라이언트로 —
-   본문 추출(DOM) → 기존 `/api/transform/stream` 호출 → 사이드패널 렌더링.
-   개념 카드 용어를 기사 본문에 하이라이트(content script) — 구 "원문 나란히 보기"의 재해석이자 컨셉의 완성형.
-   API 키 노출 금지: 확장에서 Anthropic 직접 호출 금지, 반드시 서버 경유.
+5. ~~**크롬 확장**~~ ✅ 완료 (v0.4) — `extension/` MV3 사이드패널. 본문 추출 → `/api/transform/stream` →
+   패널 렌더링 + 개념 용어 본문 형광펜 하이라이트(카드 클릭 시 해당 위치로 스크롤).
+   남은 것: 아이콘 PNG, 웹스토어 배포, 본문 추출 고도화(Readability급).
 6. **web search 그라운딩**: 최신 사건 배경을 검색 결과에 근거시켜 컷오프 환각 리스크 제거.
 7. **결과 내보내기**: 브리핑을 마크다운/이미지로 저장·공유.
 8. **H1 검증 실험 지원**: `experiments/prototype-3-context-test.md`의 브리핑 유/무 이해도 비교 (뉴스 기사로).

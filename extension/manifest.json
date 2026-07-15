@@ -1,0 +1,11 @@
+{
+  "manifest_version": 3,
+  "name": "갈피 — 읽기 전 문맥 브리핑",
+  "version": "0.1.0",
+  "description": "뉴스 기사 페이지에서 원클릭으로 읽기 전 브리핑을 띄우고, 기사가 전제하는 개념을 본문에 하이라이트합니다.",
+  "permissions": ["sidePanel", "activeTab", "scripting", "storage"],
+  "host_permissions": ["http://localhost:8000/*", "http://127.0.0.1:8000/*"],
+  "background": { "service_worker": "background.js" },
+  "action": { "default_title": "갈피 잡기 — 읽기 전 브리핑" },
+  "side_panel": { "default_path": "sidepanel.html" }
+}

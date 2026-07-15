@@ -151,3 +151,21 @@ def test_스트림_중_파이프라인_실패는_error_이벤트로_전달된다
     events = parse_sse(res.text)
     assert events[-1]["event"] == "error"
     assert "② 문맥 채우기" in events[-1]["data"]["detail"]
+
+
+# ── 크롬 확장 CORS ───────────────────────────────────────────────
+
+def test_크롬_확장_오리진은_CORS_허용(pipeline_stub):
+    ext_origin = "chrome-extension://" + "a" * 32
+    res = client.post(
+        "/api/transform", json={"text": LONG_TEXT}, headers={"Origin": ext_origin}
+    )
+    assert res.status_code == 200
+    assert res.headers.get("access-control-allow-origin") == ext_origin
+
+
+def test_일반_웹_오리진은_CORS_불허(pipeline_stub):
+    res = client.post(
+        "/api/transform", json={"text": LONG_TEXT}, headers={"Origin": "https://evil.example"}
+    )
+    assert "access-control-allow-origin" not in res.headers
