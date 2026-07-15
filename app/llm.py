@@ -1,7 +1,8 @@
 """LLM 클라이언트 래퍼.
 
 - 단계별 모델 라우팅: 추출/검증(빠르고 저렴) vs 각색(고품질)
-- JSON 응답 안전 파싱: 관대 모드(strict=False) → 실패 시 LLM 자가수리 1회
+- 구조화 출력: tool use 강제로 API가 파싱한 dict를 직접 받는다.
+  (모델이 텍스트로 JSON을 쓰다 따옴표 이스케이프를 빠뜨리는 문제를 원천 차단 — v0.1.2)
 """
 
 import json
@@ -31,7 +32,7 @@ def complete(
     model: str | None = None,
     max_tokens: int = 4000,
 ) -> str:
-    """단일 턴 완성 호출."""
+    """단일 턴 완성 호출 (자유 텍스트)."""
     response = client().messages.create(
         model=model or SMART_MODEL,
         max_tokens=max_tokens,
@@ -41,13 +42,42 @@ def complete(
     return "".join(block.text for block in response.content if block.type == "text")
 
 
-def parse_json(text: str) -> dict:
-    """모델 응답에서 JSON 객체를 최대한 안전하게 파싱한다.
+def complete_json(
+    prompt: str,
+    system: str = "",
+    model: str | None = None,
+    max_tokens: int = 4000,
+) -> dict:
+    """구조화 출력 호출 — 유효한 JSON이 보장된다.
 
-    - ```json 코드펜스 제거
-    - 첫 '{'부터 마지막 '}'까지 잘라서 파싱
-    - 문자열 안 제어문자(줄바꿈 등)는 strict=False로 허용
+    tool use를 강제하면 모델의 구조화 출력을 API가 직접 파싱해 dict로 전달한다.
+    모델이 JSON을 '텍스트로 쓰는' 과정이 없으므로,
+    문자열 안 따옴표/줄바꿈 이스케이프 누락으로 인한 파싱 오류가 원천적으로 발생하지 않는다.
     """
+    response = client().messages.create(
+        model=model or SMART_MODEL,
+        max_tokens=max_tokens,
+        system=system,
+        messages=[{"role": "user", "content": prompt}],
+        tools=[
+            {
+                "name": "emit_result",
+                "description": "프롬프트가 요구한 스키마의 구조화된 결과를 그대로 전달한다.",
+                "input_schema": {"type": "object"},
+            }
+        ],
+        tool_choice={"type": "tool", "name": "emit_result"},
+    )
+    for block in response.content:
+        if block.type == "tool_use":
+            return block.input
+    # 폴백: 혹시 텍스트로 왔을 경우 기존 파서 시도
+    text = "".join(b.text for b in response.content if b.type == "text")
+    return parse_json(text)
+
+
+def parse_json(text: str) -> dict:
+    """텍스트 응답에서 JSON 객체를 최대한 안전하게 파싱한다 (폴백/유틸용)."""
     cleaned = re.sub(r"```(?:json)?", "", text).strip()
     start = cleaned.find("{")
     end = cleaned.rfind("}")
@@ -59,29 +89,3 @@ def parse_json(text: str) -> dict:
     except json.JSONDecodeError:
         # 문자열 내부의 이스케이프 안 된 줄바꿈/탭을 허용하는 관대 모드
         return json.loads(snippet, strict=False)
-
-
-REPAIR_JSON_SYSTEM = """당신은 깨진 JSON을 고치는 도구입니다.
-내용(텍스트 값)은 절대 바꾸지 말고, 문법만 유효한 JSON으로 수정합니다.
-흔한 원인: 문자열 값 안의 이스케이프 안 된 큰따옴표(\\"로 바꿔야 함), 누락된 쉼표, 잘린 끝부분.
-수정된 JSON 객체만 출력합니다. 설명, 코드펜스를 붙이지 않습니다."""
-
-
-def complete_json(
-    prompt: str,
-    system: str = "",
-    model: str | None = None,
-    max_tokens: int = 4000,
-) -> dict:
-    """JSON 응답을 기대하는 호출. 파싱 실패 시 저비용 모델로 자가수리 1회."""
-    raw = complete(prompt, system=system, model=model, max_tokens=max_tokens)
-    try:
-        return parse_json(raw)
-    except (json.JSONDecodeError, ValueError):
-        repaired = complete(
-            f"다음 출력을 유효한 JSON으로 고쳐주세요:\n\n{raw}",
-            system=REPAIR_JSON_SYSTEM,
-            model=FAST_MODEL,
-            max_tokens=max_tokens,
-        )
-        return parse_json(repaired)
