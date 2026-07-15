@@ -1,0 +1,12 @@
+.gradle/
+build/
+out/
+.idea/
+*.iml
+.DS_Store
+### 로컬 비밀 설정 (API 키) — 절대 커밋 금지
+application-local.yml
+src/main/resources/application-local.yml
+### 로컬 데이터 (구 H2 파일 등)
+data/
+.idea/

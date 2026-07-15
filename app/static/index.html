@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>썰풀이 — 기사를 이야기로</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --night: #14161f;        /* 밤 배경 */
+    --night-soft: #1d2030;   /* 패널 */
+    --paper: #f7f4ec;        /* 이야기 종이 */
+    --ink: #23201a;          /* 종이 위 잉크 */
+    --dim: #9aa0b5;          /* 어두운 배경 위 보조 텍스트 */
+    --line: #2c3044;
+    --marker: #ffd94a;       /* 형광펜 — 통찰 하이라이트 */
+    --marker-ink: #4a3d00;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--night);
+    color: #e8eaf2;
+    font-family: 'IBM Plex Sans KR', sans-serif;
+    min-height: 100vh;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 48px 20px 96px; }
+
+  /* 헤더 */
+  header { margin-bottom: 40px; }
+  .brand {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 34px; font-weight: 700; letter-spacing: -0.5px;
+  }
+  .brand .dot { color: var(--marker); }
+  .tagline { color: var(--dim); margin-top: 8px; font-size: 15px; }
+
+  /* 입력 패널 */
+  .panel {
+    background: var(--night-soft);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 24px;
+  }
+  .tabs { display: flex; gap: 8px; margin-bottom: 14px; }
+  .tab {
+    background: none; border: 1px solid var(--line); color: var(--dim);
+    padding: 7px 14px; border-radius: 8px; font-size: 13px; cursor: pointer;
+    font-family: inherit;
+  }
+  .tab.active { background: #262a3d; color: #fff; border-color: #3a3f5c; }
+  textarea, input[type="url"] {
+    width: 100%; background: #12141c; border: 1px solid var(--line);
+    border-radius: 10px; color: #e8eaf2; padding: 14px;
+    font-size: 14px; line-height: 1.7; font-family: inherit;
+  }
+  textarea { min-height: 180px; resize: vertical; }
+  textarea:focus, input:focus { outline: 2px solid #4a517a; outline-offset: 1px; }
+
+  .controls { display: flex; align-items: center; gap: 14px; margin-top: 16px; flex-wrap: wrap; }
+  .style-pick { display: flex; gap: 8px; }
+  .style-btn {
+    background: none; border: 1px solid var(--line); color: var(--dim);
+    padding: 9px 14px; border-radius: 10px; font-size: 13px; cursor: pointer;
+    font-family: inherit; transition: all .15s;
+  }
+  .style-btn.active { border-color: var(--marker); color: var(--marker); }
+  .go {
+    margin-left: auto;
+    background: var(--marker); color: var(--marker-ink); border: none;
+    font-weight: 700; font-size: 15px; padding: 11px 26px; border-radius: 10px;
+    cursor: pointer; font-family: inherit;
+  }
+  .go:hover { filter: brightness(1.06); }
+  .go:disabled { opacity: .45; cursor: wait; }
+
+  /* 진행 상태 */
+  .progress { display: none; margin-top: 28px; color: var(--dim); font-size: 14px; }
+  .progress.show { display: block; }
+  .stage { display: flex; align-items: center; gap: 10px; padding: 6px 0; }
+  .stage .lamp {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--line); flex-shrink: 0;
+  }
+  .stage.on .lamp { background: var(--marker); animation: pulse 1.2s infinite; }
+  .stage.done .lamp { background: #5fc98e; animation: none; }
+  .stage.done { color: #8b93ad; }
+  @keyframes pulse { 50% { opacity: .35; } }
+
+  /* 결과: 종이 스토리 카드 */
+  .result { display: none; margin-top: 36px; }
+  .result.show { display: block; }
+  .paper-card {
+    background: var(--paper); color: var(--ink);
+    border-radius: 4px 18px 18px 4px;
+    padding: 52px 56px;
+    box-shadow: 0 24px 60px rgba(0,0,0,.5);
+    border-left: 6px solid var(--marker);
+  }
+  .paper-card h2 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 27px; font-weight: 700; line-height: 1.4;
+    margin-bottom: 26px;
+  }
+  .story {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 16.5px; line-height: 2.0;
+  }
+  .story p { margin-bottom: 1.35em; }
+  .insight {
+    margin-top: 36px; padding: 20px 22px;
+    background: linear-gradient(transparent 8%, rgba(255,217,74,.38) 8%, rgba(255,217,74,.38) 92%, transparent 92%);
+    font-family: 'Noto Serif KR', serif;
+    font-size: 15.5px; line-height: 1.9;
+  }
+  .insight .label {
+    display: block; font-family: 'IBM Plex Sans KR', sans-serif;
+    font-size: 12px; font-weight: 700; letter-spacing: 2px;
+    margin-bottom: 8px; color: #7a6410;
+  }
+
+  /* 중간 산출물 (실험용) */
+  .lab { margin-top: 28px; }
+  .lab-title { font-size: 13px; color: var(--dim); letter-spacing: 1.5px; margin-bottom: 12px; }
+  details {
+    background: var(--night-soft); border: 1px solid var(--line);
+    border-radius: 10px; margin-bottom: 10px;
+  }
+  summary {
+    cursor: pointer; padding: 13px 18px; font-size: 14px; color: #c6cbe0;
+    list-style: none; display: flex; align-items: center; gap: 10px;
+  }
+  summary::before { content: "▸"; color: var(--dim); font-size: 12px; }
+  details[open] summary::before { content: "▾"; }
+  .detail-body { padding: 0 18px 16px; font-size: 13px; }
+  pre {
+    background: #12141c; border-radius: 8px; padding: 14px;
+    overflow-x: auto; color: #b9c0d8; line-height: 1.6; font-size: 12.5px;
+    white-space: pre-wrap; word-break: break-all;
+  }
+  .verdict { display: flex; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
+  .verdict:last-child { border-bottom: none; }
+  .badge {
+    flex-shrink: 0; font-size: 11px; font-weight: 700; padding: 2px 8px;
+    border-radius: 20px; height: fit-content;
+  }
+  .badge.ok { background: #1e3a2c; color: #5fc98e; }
+  .badge.est { background: #3a331e; color: #d9b64a; }
+  .badge.bad { background: #3a1e1e; color: #e07070; }
+  .repaired-note { font-size: 12.5px; color: #d9b64a; margin: 8px 0 0; }
+
+  .error {
+    display: none; margin-top: 20px; padding: 14px 18px;
+    background: #2c1a1e; border: 1px solid #5c2e36; border-radius: 10px;
+    color: #f0a5b0; font-size: 14px;
+  }
+  .error.show { display: block; }
+
+  .disclaimer { margin-top: 18px; font-size: 12px; color: #6b7189; line-height: 1.6; }
+
+  @media (max-width: 640px) {
+    .paper-card { padding: 32px 24px; }
+    .go { width: 100%; margin-left: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .stage.on .lamp { animation: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">썰풀이<span class="dot">.</span></div>
+    <p class="tagline">요약은 정보를 줄이고, 썰풀이는 정보를 기억에 남게 한다</p>
+  </header>
+
+  <section class="panel">
+    <div class="tabs">
+      <button class="tab active" id="tab-text" onclick="switchTab('text')">기사 붙여넣기</button>
+      <button class="tab" id="tab-url" onclick="switchTab('url')">URL로 가져오기</button>
+    </div>
+
+    <div id="input-text">
+      <textarea id="article-text" placeholder="기사 본문을 붙여넣으세요 (200자 이상). 사건·분쟁·정책 전개형 기사가 이야기로 잘 풀립니다."></textarea>
+    </div>
+    <div id="input-url" style="display:none">
+      <input type="url" id="article-url" placeholder="https:// 기사 주소 (일부 언론사는 자동 추출이 안 될 수 있어요 — 그땐 붙여넣기로)">
+    </div>
+
+    <div class="controls">
+      <div class="style-pick" role="group" aria-label="이야기 유형">
+        <button class="style-btn active" id="style-chronicle" onclick="pickStyle('chronicle')">전말 스토리</button>
+        <button class="style-btn" id="style-character" onclick="pickStyle('character')">인물 중심 드라마</button>
+      </div>
+      <button class="go" id="go" onclick="transform()">이야기로 풀기</button>
+    </div>
+
+    <div class="progress" id="progress">
+      <div class="stage" id="st-1"><span class="lamp"></span>사실을 추출하는 중 — 이야기의 재료를 고정합니다</div>
+      <div class="stage" id="st-2"><span class="lamp"></span>이야기 뼈대를 짜는 중 — 주인공과 갈등을 정합니다</div>
+      <div class="stage" id="st-3"><span class="lamp"></span>이야기를 쓰는 중 — 사실은 그대로, 서술만 바꿉니다</div>
+      <div class="stage" id="st-4"><span class="lamp"></span>사실과 대조하는 중 — 지어낸 게 없는지 검증합니다</div>
+    </div>
+
+    <div class="error" id="error"></div>
+  </section>
+
+  <section class="result" id="result">
+    <article class="paper-card">
+      <h2 id="r-title"></h2>
+      <div class="story" id="r-story"></div>
+      <div class="insight">
+        <span class="label">이 사건이 말해주는 것</span>
+        <span id="r-insight"></span>
+      </div>
+    </article>
+
+    <div class="lab">
+      <p class="lab-title">파이프라인 들여다보기 — 단계별 산출물</p>
+      <details>
+        <summary>검증 리포트 — 이야기 속 주장 vs 사실 목록</summary>
+        <div class="detail-body">
+          <p class="repaired-note" id="r-repaired" style="display:none">⚠ 1차 생성에서 불일치가 발견되어 자동 수정을 거친 결과입니다.</p>
+          <div id="r-claims"></div>
+        </div>
+      </details>
+      <details>
+        <summary>① 추출된 사실 목록 (불변 계약)</summary>
+        <div class="detail-body"><pre id="r-facts"></pre></div>
+      </details>
+      <details>
+        <summary>② 서사 설계도</summary>
+        <div class="detail-body"><pre id="r-arc"></pre></div>
+      </details>
+    </div>
+
+    <p class="disclaimer">
+      이 이야기는 입력된 기사에 명시된 사실만 재료로 재구성한 콘텐츠이며, 투자 권유가 아닙니다.
+      원문 기사는 저장되지 않습니다. 각색 특성상 원문 확인을 권합니다.
+    </p>
+  </section>
+</div>
+
+<script>
+let mode = 'text';
+let style = 'chronicle';
+let stageTimers = [];
+
+function switchTab(m) {
+  mode = m;
+  document.getElementById('tab-text').classList.toggle('active', m === 'text');
+  document.getElementById('tab-url').classList.toggle('active', m === 'url');
+  document.getElementById('input-text').style.display = m === 'text' ? '' : 'none';
+  document.getElementById('input-url').style.display = m === 'url' ? '' : 'none';
+}
+
+function pickStyle(s) {
+  style = s;
+  document.getElementById('style-chronicle').classList.toggle('active', s === 'chronicle');
+  document.getElementById('style-character').classList.toggle('active', s === 'character');
+}
+
+function setStages(running) {
+  stageTimers.forEach(clearTimeout);
+  stageTimers = [];
+  const ids = ['st-1', 'st-2', 'st-3', 'st-4'];
+  ids.forEach(id => document.getElementById(id).className = 'stage');
+  if (!running) return;
+  // 실제 단계 신호는 없으므로 평균 소요 기반 근사 표시 (v0.2에서 SSE로 교체 예정)
+  const delays = [0, 12000, 24000, 55000];
+  ids.forEach((id, i) => {
+    stageTimers.push(setTimeout(() => {
+      for (let j = 0; j < i; j++) document.getElementById(ids[j]).className = 'stage done';
+      document.getElementById(id).className = 'stage on';
+    }, delays[i]));
+  });
+}
+
+async function transform() {
+  const body = { style };
+  if (mode === 'text') {
+    body.text = document.getElementById('article-text').value;
+    if (!body.text || body.text.trim().length < 200) return showError('기사 본문을 200자 이상 붙여넣어주세요.');
+  } else {
+    body.url = document.getElementById('article-url').value;
+    if (!body.url) return showError('기사 URL을 입력해주세요.');
+  }
+
+  const go = document.getElementById('go');
+  go.disabled = true;
+  document.getElementById('error').className = 'error';
+  document.getElementById('result').className = 'result';
+  document.getElementById('progress').className = 'progress show';
+  setStages(true);
+
+  try {
+    const res = await fetch('/api/transform', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || '변환에 실패했습니다.');
+    render(data);
+  } catch (e) {
+    showError(e.message);
+  } finally {
+    go.disabled = false;
+    setStages(false);
+    document.getElementById('progress').className = 'progress';
+  }
+}
+
+function render(d) {
+  document.getElementById('r-title').textContent = d.title;
+  const storyEl = document.getElementById('r-story');
+  storyEl.innerHTML = '';
+  d.story.split(/\n\n+/).forEach(par => {
+    const p = document.createElement('p');
+    p.textContent = par.trim();
+    if (p.textContent) storyEl.appendChild(p);
+  });
+  document.getElementById('r-insight').textContent = d.insight;
+
+  document.getElementById('r-repaired').style.display = d.repaired ? '' : 'none';
+
+  const claimsEl = document.getElementById('r-claims');
+  claimsEl.innerHTML = '';
+  (d.verification.claims || []).forEach(c => {
+    const row = document.createElement('div');
+    row.className = 'verdict';
+    const badge = document.createElement('span');
+    const cls = c.verdict === '근거있음' ? 'ok' : (c.verdict === '추정표기됨' ? 'est' : 'bad');
+    badge.className = 'badge ' + cls;
+    badge.textContent = c.verdict;
+    const text = document.createElement('span');
+    text.textContent = c.claim + (c.evidence ? '  ·  ' + c.evidence : '');
+    row.appendChild(badge);
+    row.appendChild(text);
+    claimsEl.appendChild(row);
+  });
+
+  document.getElementById('r-facts').textContent = JSON.stringify(d.facts, null, 2);
+  document.getElementById('r-arc').textContent = JSON.stringify(d.arc, null, 2);
+
+  document.getElementById('result').className = 'result show';
+  document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+}
+
+function showError(msg) {
+  const el = document.getElementById('error');
+  el.textContent = msg;
+  el.className = 'error show';
+}
+</script>
+</body>
+</html>
