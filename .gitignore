@@ -1,12 +1,22 @@
-.gradle/
-build/
-out/
+### IDE
 .idea/
 *.iml
 .DS_Store
+
+### Python (썰풀이 MVP)
+.venv/
+__pycache__/
+*.pyc
+
 ### 로컬 비밀 설정 (API 키) — 절대 커밋 금지
+.env
 application-local.yml
 src/main/resources/application-local.yml
+
+### Java / Gradle (레벨3에서 Spring 전환 대비)
+.gradle/
+build/
+out/
+
 ### 로컬 데이터 (구 H2 파일 등)
 data/
-.idea/
