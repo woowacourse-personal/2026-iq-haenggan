@@ -1,4 +1,6 @@
-"""API 입력 검증 테스트 — 파이프라인은 목킹, LLM 호출 없음."""
+"""API 입력 검증 + SSE 스트림 테스트 — 파이프라인은 목킹, LLM 호출 없음."""
+
+import json
 
 import pytest
 from fastapi.testclient import TestClient
@@ -90,3 +92,62 @@ def test_루트는_UI를_반환한다():
     res = client.get("/")
     assert res.status_code == 200
     assert "행간" in res.text
+
+
+# ── SSE 스트림 (/api/transform/stream) ───────────────────────────────
+
+def parse_sse(body: str) -> list[dict]:
+    events = []
+    for chunk in body.strip().split("\n\n"):
+        event, data = "message", ""
+        for line in chunk.split("\n"):
+            if line.startswith("event: "):
+                event = line[len("event: "):]
+            elif line.startswith("data: "):
+                data += line[len("data: "):]
+        events.append({"event": event, "data": json.loads(data)})
+    return events
+
+
+def test_스트림_입력_검증도_같은_규칙으로_400(pipeline_stub):
+    assert client.post("/api/transform/stream", json={}).status_code == 400
+    assert client.post("/api/transform/stream", json={"text": "짧음"}).status_code == 400
+    assert (
+        client.post(
+            "/api/transform/stream", json={"text": LONG_TEXT, "level": "expert"}
+        ).status_code
+        == 400
+    )
+    assert not pipeline_stub
+
+
+def test_스트림은_단계_이벤트_후_결과를_보낸다(monkeypatch):
+    def fake_run_pipeline(document, level, on_event=None):
+        for stage in ("analyze", "contextualize", "compose", "verify"):
+            on_event(stage, "start")
+            on_event(stage, "done")
+        return dict(PIPELINE_RESULT)
+
+    monkeypatch.setattr(main, "run_pipeline", fake_run_pipeline)
+    res = client.post("/api/transform/stream", json={"text": LONG_TEXT})
+
+    assert res.status_code == 200
+    assert res.headers["content-type"].startswith("text/event-stream")
+    events = parse_sse(res.text)
+    assert events[0] == {"event": "stage", "data": {"stage": "analyze", "status": "start"}}
+    assert [e["event"] for e in events[:-1]] == ["stage"] * 8
+    assert events[-1]["event"] == "result"
+    assert events[-1]["data"] == PIPELINE_RESULT
+
+
+def test_스트림_중_파이프라인_실패는_error_이벤트로_전달된다(monkeypatch):
+    def fake_run_pipeline(document, level, on_event=None):
+        on_event("analyze", "start")
+        raise RuntimeError("[② 문맥 채우기] boom")
+
+    monkeypatch.setattr(main, "run_pipeline", fake_run_pipeline)
+    res = client.post("/api/transform/stream", json={"text": LONG_TEXT})
+
+    events = parse_sse(res.text)
+    assert events[-1]["event"] == "error"
+    assert "② 문맥 채우기" in events[-1]["data"]["detail"]

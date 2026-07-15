@@ -41,7 +41,10 @@
 - 오케스트레이션: `app/pipeline/__init__.py` — `_stage()` 래퍼가 실패 시 단계명을 에러에 붙임. 이 패턴 유지.
 - LLM 래퍼: `app/llm.py` — `complete()`(자유 텍스트), `complete_json(prompt, schema, ...)`(tool use 강제).
   모델은 env로 오버라이드 가능 (`HAENGGAN_SMART_MODEL`, `HAENGGAN_FAST_MODEL`).
-- 서버: `app/main.py` — FastAPI. `POST /api/transform {text|url, level}`. URL 추출은 BeautifulSoup 베스트에포트.
+- 서버: `app/main.py` — FastAPI. `POST /api/transform {text|url, level}`(한 번에 응답),
+  `POST /api/transform/stream`(SSE: `stage {stage, status}` 이벤트 → `result` 또는 `error`).
+  파이프라인은 스레드에서 돌고 이벤트는 큐로 중계. 입력 검증은 `resolve_document()` 공용, 검증 실패는 스트림 전 400.
+  URL 추출은 BeautifulSoup 베스트에포트.
 - UI: `app/static/index.html` — 단일 파일 (바닐라 JS). 다크 UI + 종이 카드 + 형광펜 컨셉.
 - 문서: `docs/planning.md`(구 기획서, 히스토리), `experiments/`(프로토타이핑 실험 템플릿).
 
@@ -88,7 +91,7 @@ python -m pytest tests/ -q
 
 1. ~~**리네이밍**: 썰풀이 → 행간~~ ✅ 완료 — UI/README/FastAPI title, env 접두사 SSULPURI_→HAENGGAN_.
 2. ~~**테스트 도입**: pytest 단위·스키마 회귀·API 검증~~ ✅ 완료 — `tests/`, 실행법은 위 "테스트" 절.
-3. **SSE 진행 표시**: 현재 UI 진행 표시는 가짜 타이머 — 실제 단계 이벤트를 SSE로 스트리밍.
+3. ~~**SSE 진행 표시**~~ ✅ 완료 — `/api/transform/stream` + `run_pipeline(on_event=...)`, UI 램프가 실제 단계와 동기화 (repair 램프는 문제 발견 시에만 표시).
 4. **원문 나란히 보기**: 브리핑 옆에 원문을 띄우고, 개념 카드의 용어가 원문에서 하이라이트되는 뷰.
    (서비스 철학상 최종 목적지는 "원문을 읽게 하는 것"이므로 이 기능이 컨셉의 완성형)
 5. **결과 내보내기**: 브리핑을 마크다운/이미지로 저장·공유.

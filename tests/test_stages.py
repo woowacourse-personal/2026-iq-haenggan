@@ -240,6 +240,32 @@ def test_단계_실패시_에러에_단계명이_붙는다(stages, monkeypatch):
         pipeline.run_pipeline(DOC, "beginner")
 
 
+def test_진행_이벤트가_단계_순서대로_방출된다(stages):
+    events: list[tuple[str, str]] = []
+
+    pipeline.run_pipeline(DOC, "beginner", on_event=lambda s, st: events.append((s, st)))
+
+    assert events == [
+        ("analyze", "start"), ("analyze", "done"),
+        ("contextualize", "start"), ("contextualize", "done"),
+        ("compose", "start"), ("compose", "done"),
+        ("verify", "start"), ("verify", "done"),
+    ]
+
+
+def test_문제가_있으면_repair_이벤트도_방출된다(stages, monkeypatch):
+    verdicts = iter([
+        {"claims": [], "issues": [{"claim": "스포", "reason": "r", "suggestion": "s"}]},
+        VERIFY_OK,
+    ])
+    monkeypatch.setattr(pipeline, "verify", lambda doc, bundle: next(verdicts))
+    events: list[tuple[str, str]] = []
+
+    pipeline.run_pipeline(DOC, "beginner", on_event=lambda s, st: events.append((s, st)))
+
+    assert events[-2:] == [("repair", "start"), ("repair", "done")]
+
+
 def test_문서는_최대_길이로_잘려서_들어간다(stages, monkeypatch):
     seen = {}
 
