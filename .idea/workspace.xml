@@ -4,14 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2210d2f7-176f-4fb4-9761-30a2e97b5973" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/app/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/pipeline/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/pipeline/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/pipeline/arc.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/pipeline/arc.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/pipeline/extract.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/pipeline/extract.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/pipeline/narrate.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/pipeline/narrate.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/static/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/static/index.html" afterDir="false" />
-    </list>
+    <list default="true" id="2210d2f7-176f-4fb4-9761-30a2e97b5973" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -61,7 +54,7 @@
       <updated>1784092097561</updated>
       <workItem from="1784092099057" duration="73000" />
       <workItem from="1784092192468" duration="620000" />
-      <workItem from="1784092822257" duration="1770000" />
+      <workItem from="1784092822257" duration="2380000" />
     </task>
     <servers />
   </component>

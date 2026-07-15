@@ -26,7 +26,7 @@ class TransformRequest(BaseModel):
     text: str | None = None
     url: str | None = None
     style: str = "chronicle"  # chronicle | character
-    engine: str = "v2"  # v1(담백) | v2(썰)
+    engine: str = "v3"  # v1(담백) | v2(썰) | v3(썰+선별)
 
 
 def fetch_article_text(url: str) -> str:
@@ -71,8 +71,8 @@ def index():
 def transform(request: TransformRequest):
     if request.style not in ("chronicle", "character"):
         raise HTTPException(400, "style은 chronicle 또는 character여야 합니다.")
-    if request.engine not in ("v1", "v2"):
-        raise HTTPException(400, "engine은 v1 또는 v2여야 합니다.")
+    if request.engine not in ("v1", "v2", "v3"):
+        raise HTTPException(400, "engine은 v1, v2, v3 중 하나여야 합니다.")
 
     if request.text and request.text.strip():
         article_text = request.text

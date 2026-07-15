@@ -24,7 +24,7 @@ def _stage(name: str, fn, *args):
         raise RuntimeError(f"[{name}] {exc}") from exc
 
 
-def run_pipeline(article_text: str, style: str = "chronicle", engine: str = "v2") -> dict:
+def run_pipeline(article_text: str, style: str = "chronicle", engine: str = "v3") -> dict:
     article_text = article_text.strip()[:MAX_ARTICLE_CHARS]
 
     # ① 사실 추출 — 이후 모든 단계의 불변 계약

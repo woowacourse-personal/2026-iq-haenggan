@@ -14,6 +14,8 @@ SYSTEM = """당신은 논픽션 스토리 구성 작가입니다.
 사실 목록에 없는 사건이나 정보를 설계에 넣지 않습니다.
 
 좋은 설계의 조건:
+- 버리기: 썰의 생명은 선별이다. 사실 목록에서 이야기의 뼈대가 되는 6~8개만 고르고
+  나머지는 과감히 버린다. 다 담으려는 순간 썰이 아니라 보고서가 된다.
 - 훅: 독자가 첫 문단에서 "뭐지?" 하고 붙잡히는 지점을 정한다. 결말 스포일러 금지.
 - 긴장: 각 막마다 독자가 궁금해할 것 또는 걸림돌을 정한다.
   사실 목록에 갈등이 없으면 "이게 왜 당연하지 않은가"를 긴장으로 쓴다.
@@ -22,6 +24,11 @@ SYSTEM = """당신은 논픽션 스토리 구성 작가입니다.
 SCHEMA = {
     "type": "object",
     "properties": {
+        "selected_fact_refs": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "썰에 실제로 사용할 사실 id 6~8개만. 나머지는 버린다.",
+        },
         "protagonist": {
             "type": "string",
             "description": "이야기의 축이 되는 주인공 (인물, 기업, 또는 '돈의 흐름' 같은 개념)",
@@ -65,7 +72,7 @@ SCHEMA = {
             },
         },
     },
-    "required": ["protagonist", "framing", "hook", "key_reveal", "acts"],
+    "required": ["selected_fact_refs", "protagonist", "framing", "hook", "key_reveal", "acts"],
 }
 
 STYLE_GUIDE = {
@@ -76,7 +83,7 @@ STYLE_GUIDE = {
 PROMPT_TEMPLATE = """아래 사실 목록으로 '{style_guide}' 방식의 이야기 설계도를 만드세요.
 
 규칙:
-- 각 막(act)의 fact_refs에는 반드시 사실 목록의 id(E1, N1, Q1 등)만 넣는다.
+- 먼저 selected_fact_refs로 쓸 사실 6~8개만 고른다. 각 막(act)의 fact_refs는 그 안에서만 고른다.
 - 사실 목록에 없는 내용을 설계에 포함하지 않는다.
 - 주인공은 이 사건을 가장 흥미롭게 꿰는 시점으로 골라라.
 
