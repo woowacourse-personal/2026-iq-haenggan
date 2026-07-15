@@ -40,7 +40,7 @@
 
 - 오케스트레이션: `app/pipeline/__init__.py` — `_stage()` 래퍼가 실패 시 단계명을 에러에 붙임. 이 패턴 유지.
 - LLM 래퍼: `app/llm.py` — `complete()`(자유 텍스트), `complete_json(prompt, schema, ...)`(tool use 강제).
-  모델은 env로 오버라이드 가능 (`SSULPURI_SMART_MODEL`, `SSULPURI_FAST_MODEL` — 리네이밍 시 변수명도 변경 대상).
+  모델은 env로 오버라이드 가능 (`HAENGGAN_SMART_MODEL`, `HAENGGAN_FAST_MODEL`).
 - 서버: `app/main.py` — FastAPI. `POST /api/transform {text|url, level}`. URL 추출은 BeautifulSoup 베스트에포트.
 - UI: `app/static/index.html` — 단일 파일 (바닐라 JS). 다크 UI + 종이 카드 + 형광펜 컨셉.
 - 문서: `docs/planning.md`(구 기획서, 히스토리), `experiments/`(프로토타이핑 실험 템플릿).
@@ -74,7 +74,7 @@ uvicorn app.main:app --reload   # http://localhost:8000
 
 ## 로드맵 (우선순위 순)
 
-1. **리네이밍**: 썰풀이 → 행간. 코드 내 브랜딩 문자열, env 변수 접두사(SSULPURI_→HAENGGAN_), README, UI 헤더/타이틀.
+1. ~~**리네이밍**: 썰풀이 → 행간~~ ✅ 완료 — UI/README/FastAPI title, env 접두사 SSULPURI_→HAENGGAN_.
 2. **테스트 도입**: 파이프라인 단계별 단위 테스트(LLM 목킹) + 스키마 회귀 테스트 + API 입력 검증 테스트 (pytest).
 3. **SSE 진행 표시**: 현재 UI 진행 표시는 가짜 타이머 — 실제 단계 이벤트를 SSE로 스트리밍.
 4. **원문 나란히 보기**: 브리핑 옆에 원문을 띄우고, 개념 카드의 용어가 원문에서 하이라이트되는 뷰.

@@ -17,7 +17,7 @@ load_dotenv()  # .env의 ANTHROPIC_API_KEY 로드 (llm.py import 전에 실행�
 
 from app.pipeline import run_pipeline  # noqa: E402
 
-app = FastAPI(title="문맥 브리핑", version="0.3.0")
+app = FastAPI(title="행간 — 읽기 전 문맥 브리핑", version="0.3.0")
 
 STATIC_DIR = Path(__file__).parent / "static"
 
