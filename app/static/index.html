@@ -181,7 +181,7 @@
     </div>
 
     <div id="input-text">
-      <textarea id="article-text" placeholder="기사 본문을 붙여넣으세요 (200자 이상). 사건·분쟁·정책 전개형 기사가 이야기로 잘 풀립니다."></textarea>
+      <textarea id="article-text" placeholder="기사·판결문·공시 본문을 붙여넣으세요 (200자 이상). 갈등이 있는 문서일수록 썰이 잘 풀립니다 — 판결문 강력 추천."></textarea>
     </div>
     <div id="input-url" style="display:none">
       <input type="url" id="article-url" placeholder="https:// 기사 주소 (일부 언론사는 자동 추출이 안 될 수 있어요 — 그땐 붙여넣기로)">
@@ -191,6 +191,10 @@
       <div class="style-pick" role="group" aria-label="이야기 유형">
         <button class="style-btn active" id="style-chronicle" onclick="pickStyle('chronicle')">전말 스토리</button>
         <button class="style-btn" id="style-character" onclick="pickStyle('character')">인물 중심 드라마</button>
+      </div>
+      <div class="style-pick" role="group" aria-label="각색 엔진">
+        <button class="style-btn" id="engine-v1" onclick="pickEngine('v1')">담백 v1</button>
+        <button class="style-btn active" id="engine-v2" onclick="pickEngine('v2')">썰 v2</button>
       </div>
       <button class="go" id="go" onclick="transform()">이야기로 풀기</button>
     </div>
@@ -244,6 +248,7 @@
 <script>
 let mode = 'text';
 let style = 'chronicle';
+let engine = 'v2';
 let stageTimers = [];
 
 function switchTab(m) {
@@ -258,6 +263,12 @@ function pickStyle(s) {
   style = s;
   document.getElementById('style-chronicle').classList.toggle('active', s === 'chronicle');
   document.getElementById('style-character').classList.toggle('active', s === 'character');
+}
+
+function pickEngine(e) {
+  engine = e;
+  document.getElementById('engine-v1').classList.toggle('active', e === 'v1');
+  document.getElementById('engine-v2').classList.toggle('active', e === 'v2');
 }
 
 function setStages(running) {
@@ -277,7 +288,7 @@ function setStages(running) {
 }
 
 async function transform() {
-  const body = { style };
+  const body = { style, engine };
   if (mode === 'text') {
     body.text = document.getElementById('article-text').value;
     if (!body.text || body.text.trim().length < 200) return showError('기사 본문을 200자 이상 붙여넣어주세요.');

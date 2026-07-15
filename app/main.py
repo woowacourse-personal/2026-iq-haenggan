@@ -26,6 +26,7 @@ class TransformRequest(BaseModel):
     text: str | None = None
     url: str | None = None
     style: str = "chronicle"  # chronicle | character
+    engine: str = "v2"  # v1(담백) | v2(썰)
 
 
 def fetch_article_text(url: str) -> str:
@@ -70,6 +71,8 @@ def index():
 def transform(request: TransformRequest):
     if request.style not in ("chronicle", "character"):
         raise HTTPException(400, "style은 chronicle 또는 character여야 합니다.")
+    if request.engine not in ("v1", "v2"):
+        raise HTTPException(400, "engine은 v1 또는 v2여야 합니다.")
 
     if request.text and request.text.strip():
         article_text = request.text
@@ -82,7 +85,7 @@ def transform(request: TransformRequest):
         raise HTTPException(400, "기사가 너무 짧습니다 (200자 이상 필요).")
 
     try:
-        result = run_pipeline(article_text, request.style)
+        result = run_pipeline(article_text, request.style, request.engine)
     except Exception as exc:  # 파이프라인 단계 실패를 사용자에게 전달
         raise HTTPException(500, f"서사화 실패: {exc}") from exc
 

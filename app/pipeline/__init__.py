@@ -24,7 +24,7 @@ def _stage(name: str, fn, *args):
         raise RuntimeError(f"[{name}] {exc}") from exc
 
 
-def run_pipeline(article_text: str, style: str = "chronicle") -> dict:
+def run_pipeline(article_text: str, style: str = "chronicle", engine: str = "v2") -> dict:
     article_text = article_text.strip()[:MAX_ARTICLE_CHARS]
 
     # ① 사실 추출 — 이후 모든 단계의 불변 계약
@@ -39,7 +39,7 @@ def run_pipeline(article_text: str, style: str = "chronicle") -> dict:
     arc = _stage("② 서사 설계", design_arc, facts, style)
 
     # ③ 각색
-    draft = _stage("③ 각색", narrate, facts, arc, style)
+    draft = _stage("③ 각색", narrate, facts, arc, style, engine)
 
     # ④ 사실 대조
     verification = _stage("④ 사실 대조", verify, draft["story"], facts)
@@ -47,7 +47,7 @@ def run_pipeline(article_text: str, style: str = "chronicle") -> dict:
     # 불일치 발견 시 1회 수정 재생성 후 재검증
     repaired = False
     if verification.get("issues"):
-        draft = _stage("③′ 수정 재생성", repair, draft, verification["issues"], facts)
+        draft = _stage("③′ 수정 재생성", repair, draft, verification["issues"], facts, engine)
         verification = _stage("④′ 재검증", verify, draft["story"], facts)
         repaired = True
 
@@ -59,4 +59,5 @@ def run_pipeline(article_text: str, style: str = "chronicle") -> dict:
         "arc": arc,
         "verification": verification,
         "repaired": repaired,
+        "engine": engine,
     }
