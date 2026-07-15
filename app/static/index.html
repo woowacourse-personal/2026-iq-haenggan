@@ -23,11 +23,13 @@
   body { background: var(--night); color: #e8eaf2; font-family: 'IBM Plex Sans KR', sans-serif; min-height: 100vh; }
   .wrap { max-width: 880px; margin: 0 auto; padding: 44px 20px 96px; }
 
-  /* ── 헤더 + 히어로 ─────────────────────────────── */
-  header { margin-bottom: 28px; }
-  .brand { font-family: 'Noto Serif KR', serif; font-size: 34px; font-weight: 700; letter-spacing: -0.5px; }
+  /* ── 헤더: 신문 제호(마스트헤드) ────────────────── */
+  header { margin-bottom: 34px; }
+  .mast-top { display: flex; justify-content: space-between; gap: 12px; font-size: 11.5px; letter-spacing: 2px; color: var(--dim); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 7px 2px; }
+  .brand { font-family: 'Noto Serif KR', serif; font-size: 46px; font-weight: 700; letter-spacing: 6px; text-align: center; margin: 20px 0 14px; }
   .brand .dot { color: var(--marker); }
-  .tagline { color: var(--dim); margin-top: 8px; font-size: 15px; line-height: 1.6; }
+  .brand-rule { border: none; border-top: 1px solid var(--line); border-bottom: 3px double #3a3f5c; height: 5px; margin: 0 0 12px; }
+  .tagline { color: var(--dim); font-size: 14.5px; line-height: 1.6; text-align: center; }
   .tagline mark { background: linear-gradient(transparent 62%, var(--marker-soft) 62%); color: #e8eaf2; padding: 0 1px; }
 
   .hero { display: flex; gap: 32px; align-items: stretch; margin-bottom: 32px; }
@@ -39,9 +41,11 @@
   .hero-not { font-size: 13px; color: var(--dim); line-height: 1.7; border-left: 3px solid var(--line); padding-left: 12px; }
   .hero-not b { color: #d9b64a; }
 
-  /* 미니 데모: 원문 속 용어에 형광펜 → 개념 카드가 달리는 모습 */
+  /* 미니 데모: 신문 스크랩 — 기사 속 용어에 형광펜 → 개념 카드가 달리는 모습 */
   .hero-demo { flex: 1 1 45%; min-width: 0; display: flex; align-items: center; }
-  .demo-paper { background: var(--paper); color: var(--ink); border-radius: 3px 12px 12px 3px; border-left: 4px solid var(--marker); padding: 20px 22px; width: 100%; box-shadow: 0 16px 40px rgba(0,0,0,.45); transform: rotate(.4deg); }
+  .demo-paper { background: var(--paper); color: var(--ink); border-radius: 2px; border-left: 4px solid var(--marker); padding: 18px 22px 20px; width: 100%; box-shadow: 0 16px 40px rgba(0,0,0,.45); transform: rotate(.4deg); }
+  .demo-mast { display: flex; align-items: center; gap: 10px; font-size: 10px; font-weight: 700; letter-spacing: 4px; color: #8a7430; margin-bottom: 12px; }
+  .demo-mast::before, .demo-mast::after { content: ""; flex: 1; border-top: 1px solid #d9d2bd; }
   .demo-line { height: 9px; border-radius: 4px; background: #e3ddca; margin-bottom: 10px; }
   .demo-sent { font-family: 'Noto Serif KR', serif; font-size: 13.5px; line-height: 1.9; margin-bottom: 10px; color: #3a352c; }
   .demo-sent mark { background: linear-gradient(transparent 55%, var(--marker-soft) 55%); font-weight: 700; color: var(--ink); padding: 0 1px; }
@@ -85,20 +89,28 @@
   .stage.done::after { content: "완료"; margin-left: auto; font-size: 11px; color: #5fc98e; letter-spacing: 1px; }
   @keyframes pulse { 50% { opacity: .35; } }
 
-  /* ── 결과: 종이 카드 ───────────────────────────── */
+  /* ── 결과: 종이 카드 = 신문 1면 ────────────────── */
   .result { display: none; margin-top: 36px; }
   .result.show { display: block; }
-  .paper-card { background: var(--paper); color: var(--ink); border-radius: 4px 18px 18px 4px; padding: 52px 56px; box-shadow: 0 24px 60px rgba(0,0,0,.5); border-left: 6px solid var(--marker); }
-  .paper-card h2 { font-family: 'Noto Serif KR', serif; font-size: 25px; font-weight: 700; line-height: 1.45; margin-bottom: 8px; }
-  .section-label { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; letter-spacing: 2px; color: #8a7430; margin: 38px 0 14px; }
-  .section-label::before { content: ""; width: 14px; height: 8px; border-radius: 2px; background: var(--marker-soft); }
-  .section-label:first-of-type { margin-top: 26px; }
+  .paper-card { background: var(--paper); background-image: repeating-linear-gradient(0deg, rgba(35,32,26,.015) 0 2px, transparent 2px 4px); color: var(--ink); border-radius: 2px; padding: 40px 52px 52px; box-shadow: 0 24px 60px rgba(0,0,0,.5); border-left: 6px solid var(--marker); }
+  .card-masthead { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: 11.5px; font-weight: 700; letter-spacing: 3px; color: #6b6250; padding-bottom: 9px; border-bottom: 3px double #55503f; margin-bottom: 20px; }
+  .card-masthead .paper-name { font-family: 'Noto Serif KR', serif; font-size: 13px; letter-spacing: 5px; color: #23201a; }
+  .paper-card h2 { font-family: 'Noto Serif KR', serif; font-size: 28px; font-weight: 700; line-height: 1.42; letter-spacing: -0.3px; }
+  .byline { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; letter-spacing: 1px; color: #6b6250; border-top: 1px solid #d9d2bd; border-bottom: 1px solid #d9d2bd; padding: 7px 2px; margin-top: 16px; }
+  .byline b { color: #4a3d00; }
+  .section-label { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; letter-spacing: 3px; color: #55503f; margin: 40px 0 16px; border-top: 2px solid #2a261e; padding-top: 10px; }
+  .section-label::after { content: ""; flex: 1; border-top: 1px solid #d9d2bd; }
+  .section-label::before { content: ""; width: 14px; height: 8px; border-radius: 1px; background: var(--marker-soft); }
+  .section-label:first-of-type { margin-top: 30px; }
   .briefing { font-family: 'Noto Serif KR', serif; font-size: 16px; line-height: 1.95; }
   .briefing p { margin-bottom: 1.2em; }
+  .briefing p:first-child::first-letter { font-size: 46px; line-height: .95; font-weight: 700; float: left; margin: 7px 9px 0 0; }
 
-  .concept { border: 1px solid #e4ddc9; background: #fdfbf5; border-radius: 12px; padding: 18px 20px; margin-bottom: 14px; }
+  #r-concepts { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .concept { border: 1px solid #d5cdb6; background: #fbf8f0; border-radius: 3px; padding: 18px 20px; margin-bottom: 0; }
+  #r-background .concept { margin-bottom: 14px; }
   .concept .term-row { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
-  .concept .term { font-weight: 700; font-size: 16px; background: linear-gradient(transparent 62%, var(--marker-soft) 62%); padding: 0 2px; }
+  .concept .term { font-family: 'Noto Serif KR', serif; font-weight: 700; font-size: 16px; background: linear-gradient(transparent 62%, var(--marker-soft) 62%); padding: 0 2px; }
   .concept .ktype { font-size: 10.5px; font-weight: 700; padding: 2.5px 9px; border-radius: 20px; letter-spacing: .5px; }
   .ktype.doc { background: #e7efe3; color: #3d6b45; }
   .ktype.gen { background: #eee7d5; color: #8a6d1f; }
@@ -138,9 +150,10 @@
 
   /* ── 모바일 ────────────────────────────────────── */
   @media (max-width: 720px) {
-    .wrap { padding: 28px 14px 72px; }
-    .brand { font-size: 28px; }
-    .tagline { font-size: 14px; }
+    .wrap { padding: 22px 14px 72px; }
+    .brand { font-size: 34px; letter-spacing: 4px; margin: 14px 0 10px; }
+    .mast-top { font-size: 10.5px; letter-spacing: 1px; }
+    .tagline { font-size: 13.5px; }
     .hero { flex-direction: column; gap: 20px; margin-bottom: 24px; }
     .hero-demo { display: none; }
     .panel { padding: 18px 14px; }
@@ -150,9 +163,12 @@
     .style-pick { width: 100%; }
     .style-btn { flex: 1; }
     .go { width: 100%; margin-left: 0; }
-    .paper-card { padding: 30px 20px; border-radius: 3px 12px 12px 3px; }
+    .paper-card { padding: 24px 18px 36px; }
     .paper-card h2 { font-size: 21px; }
+    .card-masthead { letter-spacing: 1.5px; }
     .briefing { font-size: 15px; line-height: 1.9; }
+    .briefing p:first-child::first-letter { font-size: 38px; }
+    #r-concepts { grid-template-columns: 1fr; }
     .concept { padding: 15px 14px; }
     .concept .expl { font-size: 14px; }
     .takeaway { padding: 16px; font-size: 14.5px; }
@@ -164,8 +180,10 @@
 <body>
 <div class="wrap">
   <header>
+    <div class="mast-top"><span id="today"></span><span>읽기 전 브리핑</span></div>
     <div class="brand">행간<span class="dot">.</span></div>
-    <p class="tagline">글이 어려운 건 당신 탓이 아니라, <mark>빠진 문맥</mark> 탓입니다 — 읽기 전 브리핑</p>
+    <hr class="brand-rule">
+    <p class="tagline">글이 어려운 건 당신 탓이 아니라, <mark>빠진 문맥</mark> 탓입니다</p>
   </header>
 
   <section class="hero">
@@ -177,6 +195,7 @@
     </div>
     <div class="hero-demo" aria-hidden="true">
       <div class="demo-paper">
+        <div class="demo-mast">국제 · 경제</div>
         <div class="demo-line" style="width:38%"></div>
         <div class="demo-line" style="width:96%"></div>
         <p class="demo-sent">…연준의 <mark>매파적 기조</mark>가 이어지며 <mark>신흥국 자본 유출</mark> 우려가…</p>
@@ -227,7 +246,12 @@
 
   <section class="result" id="result">
     <article class="paper-card">
+      <div class="card-masthead">
+        <span class="paper-name">행간<span style="color:var(--marker)">.</span></span>
+        <span id="r-date"></span>
+      </div>
       <h2 id="r-headline"></h2>
+      <div class="byline"><span>독자 수준 <b id="r-level-tag"></b></span><span>기사를 읽기 전, 5분 브리핑</span></div>
 
       <p class="section-label">읽기 전 브리핑</p>
       <div class="briefing" id="r-briefing"></div>
@@ -273,6 +297,13 @@
 let mode = 'text';
 let level = 'beginner';
 let elapsedTimer = null;
+
+// 신문 제호의 날짜줄 — 헤더와 결과 카드 문패에 오늘 날짜를 채운다
+const TODAY = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('today').textContent = TODAY;
+  document.getElementById('r-date').textContent = TODAY;
+});
 
 // 파이프라인 단계 → 진행 램프. repair(st-5)는 검증에서 문제가 발견될 때만 나타난다.
 const STAGE_LAMP = { analyze: 'st-1', contextualize: 'st-2', compose: 'st-3', verify: 'st-4', repair: 'st-5' };
@@ -404,6 +435,7 @@ async function transform() {
 
 function render(d) {
   document.getElementById('r-headline').textContent = d.headline;
+  document.getElementById('r-level-tag').textContent = d.level === 'intermediate' ? '중급' : '입문';
 
   const briefEl = document.getElementById('r-briefing');
   briefEl.innerHTML = '';
