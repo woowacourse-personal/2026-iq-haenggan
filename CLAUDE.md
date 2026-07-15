@@ -53,8 +53,20 @@ uvicorn app.main:app --reload   # http://localhost:8000
 ```
 
 - API 키: `.env`의 `ANTHROPIC_API_KEY` (절대 커밋 금지, .gitignore에 있음)
-- 테스트: 아직 없음 (로드맵 참조). 지금까지는 임포트/스키마/서버 기동 스모크 체크만 수동으로 함.
 - 전체 파이프라인 1회 실행 ≈ LLM 4~6콜, 1~2분, $0.05~0.15.
+
+### 테스트 (LLM 호출 없음, 무료·수 초)
+
+```bash
+pip install -r requirements-dev.txt   # pytest
+python -m pytest tests/ -q
+```
+
+- `tests/test_stages.py` — 단계별 단위 테스트(complete_json 목킹) + run_pipeline 분기(repair 루프, 단계명 에러 래핑, 문서 절단).
+- `tests/test_schemas.py` — 스키마 회귀: 빈 스키마 금지(절대 원칙 6), knowledge_type·'문제' 판정 등 필수 필드 유지 감시.
+- `tests/test_api.py` — API 입력 검증(짧은 텍스트/잘못된 level/빈 요청, 파이프라인 목킹).
+- 주의: `app/pipeline/__init__.py`가 단계 이름을 함수로 덮어쓰므로, 단계 모듈을 패치할 땐
+  `importlib.import_module("app.pipeline.analyze")`처럼 모듈 객체를 얻어서 패치할 것 (문자열 경로는 함수에 걸린다).
 
 ## 히스토리 (왜 지금 모습인가)
 
@@ -75,7 +87,7 @@ uvicorn app.main:app --reload   # http://localhost:8000
 ## 로드맵 (우선순위 순)
 
 1. ~~**리네이밍**: 썰풀이 → 행간~~ ✅ 완료 — UI/README/FastAPI title, env 접두사 SSULPURI_→HAENGGAN_.
-2. **테스트 도입**: 파이프라인 단계별 단위 테스트(LLM 목킹) + 스키마 회귀 테스트 + API 입력 검증 테스트 (pytest).
+2. ~~**테스트 도입**: pytest 단위·스키마 회귀·API 검증~~ ✅ 완료 — `tests/`, 실행법은 위 "테스트" 절.
 3. **SSE 진행 표시**: 현재 UI 진행 표시는 가짜 타이머 — 실제 단계 이벤트를 SSE로 스트리밍.
 4. **원문 나란히 보기**: 브리핑 옆에 원문을 띄우고, 개념 카드의 용어가 원문에서 하이라이트되는 뷰.
    (서비스 철학상 최종 목적지는 "원문을 읽게 하는 것"이므로 이 기능이 컨셉의 완성형)
