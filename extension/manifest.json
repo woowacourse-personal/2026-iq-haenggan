@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "갈피 — 읽기 전 문맥 브리핑",
-  "version": "0.1.0",
-  "description": "뉴스 기사 페이지에서 원클릭으로 읽기 전 브리핑을 띄우고, 기사가 전제하는 개념을 본문에 하이라이트합니다.",
+  "name": "갈피 — 읽기 전 배경지식 브리핑",
+  "version": "0.1.1",
+  "description": "기사가 전제하는 배경지식(개념·이전 사건)을 읽기 전에 채워주고, 본문에 하이라이트합니다. 광고 없는 리더 뷰 포함.",
   "permissions": ["sidePanel", "activeTab", "scripting", "storage"],
   "host_permissions": ["http://*/*", "https://*/*"],
   "background": { "service_worker": "background.js" },

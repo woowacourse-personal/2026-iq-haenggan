@@ -32,9 +32,8 @@ header { display: flex; gap: 14px; align-items: stretch; margin-bottom: 18px; }
   box-shadow: 0 6px 18px rgba(36, 86, 196, .35);
   text-align: center;
 }
-.head-lines { flex: 1; padding-top: 18px; border-bottom: 1px solid var(--line); padding-bottom: 12px; }
-.head-title { font-family: 'Noto Serif KR', serif; font-size: 16.5px; font-weight: 700; letter-spacing: .5px; }
-.head-sub { font-size: 11.5px; color: var(--dim); line-height: 1.65; margin-top: 7px; }
+.head-lines { flex: 1; display: flex; align-items: center; border-bottom: 1px solid var(--line); }
+.head-title { font-family: 'Noto Serif KR', serif; font-size: 18px; font-weight: 700; letter-spacing: .5px; line-height: 1.55; }
 
 /* ── 실행 영역 ─────────────────────────────────── */
 .run-box { background: var(--night-soft); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
