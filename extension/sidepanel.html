@@ -9,13 +9,15 @@
 </head>
 <body>
 <header>
-  <div class="mast-top"><span id="today"></span><span>읽기 전 브리핑</span></div>
-  <div class="brand">갈피<span class="dot">.</span></div>
-  <hr class="brand-rule">
+  <div class="ribbon" aria-hidden="true">갈피</div>
+  <div class="head-lines">
+    <div class="head-date" id="today"></div>
+    <div class="head-title">읽기 전 문맥 브리핑</div>
+    <p class="head-sub">기사가 전제하는 개념과 이전 사건을 채워, 기사를 읽을 수 있게 만듭니다.</p>
+  </div>
 </header>
 
 <section class="run-box">
-  <p class="hint">지금 보고 있는 기사가 어렵나요?<br>이 기사가 전제하는 개념과 이전 사건을 채워드립니다.</p>
   <div class="level-pick" role="group" aria-label="독자 수준">
     <button class="level-btn active" id="level-beginner">처음이에요</button>
     <button class="level-btn" id="level-intermediate">기본은 알아요</button>
@@ -24,11 +26,11 @@
 
   <div class="progress" id="progress">
     <div class="progress-head">문맥을 채우는 중 · <span class="elapsed" id="elapsed">0초</span> · 보통 1~2분</div>
-    <div class="stage" id="st-analyze"><span class="lamp"></span>전제하는 지식 찾기</div>
-    <div class="stage" id="st-contextualize"><span class="lamp"></span>개념·이전 사건 채우기</div>
-    <div class="stage" id="st-compose"><span class="lamp"></span>브리핑 쓰기</div>
-    <div class="stage" id="st-verify"><span class="lamp"></span>원문과 대조 검증</div>
-    <div class="stage" id="st-repair" style="display:none"><span class="lamp"></span>문제 발견 — 자동 수정</div>
+    <div class="stage" id="st-analyze"><span class="lamp"></span>① 전제하는 지식 찾기</div>
+    <div class="stage" id="st-contextualize"><span class="lamp"></span>② 개념·이전 사건 채우기</div>
+    <div class="stage" id="st-compose"><span class="lamp"></span>③ 브리핑 쓰기</div>
+    <div class="stage" id="st-verify"><span class="lamp"></span>④ 원문과 대조 검증</div>
+    <div class="stage" id="st-repair" style="display:none"><span class="lamp"></span>③′ 문제 발견 — 자동 수정</div>
   </div>
 
   <div class="error" id="error"></div>

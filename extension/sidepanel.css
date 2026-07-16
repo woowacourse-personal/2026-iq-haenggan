@@ -1,4 +1,6 @@
-/* 갈피 사이드패널 — 웹 UI와 같은 아이덴티티(다크 + 종이 + 프레스 블루 + 형광펜)의 축소판 */
+/* 갈피 사이드패널.
+   시그니처: 패널 위에서 드리워지는 파란 책갈피 리본 — '갈피'라는 이름의 물리적 은유.
+   나머지는 절제: 다크 + 종이 + 프레스 블루 + 형광펜(텍스트 하이라이트 전용)의 브랜드 토큰 유지. */
 :root {
   --night: #14161f;
   --night-soft: #1d2030;
@@ -13,27 +15,41 @@
   --press-btn: #2f6fed;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { background: var(--night); color: #e8eaf2; font-family: 'IBM Plex Sans KR', 'Apple SD Gothic Neo', sans-serif; padding: 14px 14px 40px; font-size: 14px; }
+body { background: var(--night); color: #e8eaf2; font-family: 'IBM Plex Sans KR', 'Apple SD Gothic Neo', sans-serif; padding: 0 14px 40px; font-size: 14px; }
+button:focus-visible, input:focus-visible, summary:focus-visible { outline: 2px solid var(--press); outline-offset: 2px; }
 
-header { margin-bottom: 14px; }
-.mast-top { display: flex; justify-content: space-between; font-size: 10px; letter-spacing: 1px; color: var(--dim); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 5px 2px; }
-.brand { font-family: 'Noto Serif KR', serif; font-size: 26px; font-weight: 700; letter-spacing: 4px; text-align: center; margin: 10px 0 8px; }
-.brand .dot { color: var(--press); }
-.brand-rule { border: none; border-top: 1px solid var(--line); border-bottom: 3px double #35507e; height: 4px; }
+/* ── 헤더: 책갈피 리본 ─────────────────────────── */
+header { display: flex; gap: 14px; align-items: stretch; margin-bottom: 18px; }
+.ribbon {
+  flex-shrink: 0;
+  writing-mode: vertical-rl;
+  font-family: 'Noto Serif KR', serif;
+  font-size: 19px; font-weight: 700; letter-spacing: 10px;
+  color: #fff; background: linear-gradient(180deg, var(--press-btn), var(--press-ink));
+  padding: 16px 9px 26px;
+  margin-left: 8px;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% calc(100% - 12px), 0 100%);
+  box-shadow: 0 6px 18px rgba(36, 86, 196, .35);
+  text-align: center;
+}
+.head-lines { flex: 1; padding-top: 16px; border-bottom: 1px solid var(--line); padding-bottom: 12px; }
+.head-date { font-size: 10.5px; letter-spacing: 1.5px; color: var(--dim); margin-bottom: 5px; }
+.head-title { font-family: 'Noto Serif KR', serif; font-size: 16.5px; font-weight: 700; letter-spacing: .5px; }
+.head-sub { font-size: 11.5px; color: var(--dim); line-height: 1.65; margin-top: 7px; }
 
+/* ── 실행 영역 ─────────────────────────────────── */
 .run-box { background: var(--night-soft); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
-.hint { font-size: 12.5px; color: var(--dim); line-height: 1.6; margin-bottom: 10px; }
 .level-pick { display: flex; gap: 6px; margin-bottom: 8px; }
-.level-btn { flex: 1; background: none; border: 1px solid var(--line); color: var(--dim); padding: 7px 0; border-radius: 8px; font-size: 12px; cursor: pointer; font-family: inherit; }
+.level-btn { flex: 1; background: none; border: 1px solid var(--line); color: var(--dim); padding: 8px 0; border-radius: 8px; font-size: 12px; cursor: pointer; font-family: inherit; transition: border-color .15s, color .15s; }
 .level-btn.active { border-color: var(--press); color: var(--press); }
-.go { width: 100%; background: var(--press-btn); color: #fff; border: none; font-weight: 700; font-size: 14px; padding: 10px 0; border-radius: 8px; cursor: pointer; font-family: inherit; }
+.go { width: 100%; background: var(--press-btn); color: #fff; border: none; font-weight: 700; font-size: 14.5px; padding: 12px 0; border-radius: 8px; cursor: pointer; font-family: inherit; }
 .go:hover { filter: brightness(1.08); }
 .go:disabled { opacity: .45; cursor: wait; }
 
 .progress { display: none; margin-top: 12px; border-top: 1px dashed var(--line); padding-top: 10px; }
 .progress.show { display: block; }
 .progress-head { font-size: 11px; color: var(--dim); margin-bottom: 8px; }
-.progress-head .elapsed { color: var(--press); font-weight: 700; }
+.progress-head .elapsed { color: var(--press); font-weight: 700; font-variant-numeric: tabular-nums; }
 .stage { display: flex; align-items: center; gap: 8px; padding: 5px 8px; border-radius: 6px; font-size: 12px; color: var(--dim); }
 .stage .lamp { width: 7px; height: 7px; border-radius: 50%; background: var(--line); flex-shrink: 0; }
 .stage.on { background: rgba(91, 157, 255, .08); color: #bcd3ff; }
@@ -46,44 +62,55 @@ header { margin-bottom: 14px; }
 .error { display: none; margin-top: 10px; padding: 10px 12px; background: #2c1a1e; border: 1px solid #5c2e36; border-radius: 8px; color: #f0a5b0; font-size: 12.5px; line-height: 1.6; }
 .error.show { display: block; }
 
-.result { display: none; margin-top: 16px; }
+/* ── 결과: 종이에 꽂힌 갈피 ────────────────────── */
+.result { display: none; margin-top: 18px; }
 .result.show { display: block; }
-.paper { background: var(--paper); color: var(--ink); border-radius: 2px; border-left: 4px solid var(--press-ink); padding: 18px 16px 22px; box-shadow: 0 12px 30px rgba(0,0,0,.45); }
-.paper h2 { font-family: 'Noto Serif KR', serif; font-size: 17.5px; font-weight: 700; line-height: 1.45; }
-.byline { font-size: 10.5px; letter-spacing: .5px; color: #6b6250; border-top: 1px solid #d9d2bd; border-bottom: 1px solid #d9d2bd; padding: 5px 2px; margin-top: 10px; }
+.paper { position: relative; background: var(--paper); background-image: repeating-linear-gradient(0deg, rgba(35,32,26,.015) 0 2px, transparent 2px 4px); color: var(--ink); border-radius: 2px; padding: 22px 16px 24px; box-shadow: 0 12px 30px rgba(0,0,0,.45); }
+.paper::before {
+  /* 종이에 꽂힌 작은 갈피 리본 — 헤더 리본과 호응 */
+  content: ""; position: absolute; top: -6px; right: 18px; width: 20px; height: 46px;
+  background: linear-gradient(180deg, var(--press-btn), var(--press-ink));
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% calc(100% - 9px), 0 100%);
+  box-shadow: 0 4px 10px rgba(36, 86, 196, .3);
+}
+.paper h2 { font-family: 'Noto Serif KR', serif; font-size: 18.5px; font-weight: 700; line-height: 1.45; padding-right: 34px; }
+.byline { font-size: 10.5px; letter-spacing: .5px; color: #6b6250; border-top: 1px solid #d9d2bd; border-bottom: 1px solid #d9d2bd; padding: 6px 2px; margin-top: 12px; }
 .byline b { color: var(--press-ink); }
 
-.section-label { display: flex; align-items: center; gap: 6px; font-size: 10.5px; font-weight: 700; letter-spacing: 2px; color: #45507a; margin: 22px 0 10px; border-top: 2px solid #2a3050; padding-top: 7px; }
+.section-label { display: flex; align-items: center; gap: 6px; font-size: 10.5px; font-weight: 700; letter-spacing: 2px; color: #45507a; margin: 24px 0 11px; border-top: 2px solid #2a3050; padding-top: 8px; }
 .section-label::before { content: ""; width: 11px; height: 6px; border-radius: 1px; background: rgba(36, 86, 196, .3); }
 .label-hint { font-weight: 400; letter-spacing: 0; color: #8a8470; margin-left: auto; }
 
-.briefing { font-family: 'Noto Serif KR', serif; font-size: 13.5px; line-height: 1.85; }
+.briefing { font-family: 'Noto Serif KR', serif; font-size: 13.5px; line-height: 1.9; }
 .briefing p { margin-bottom: 1em; }
+.briefing p:first-child::first-letter { font-size: 34px; line-height: .95; font-weight: 700; float: left; margin: 5px 7px 0 0; }
 
-.concept { border: 1px solid #d5cdb6; background: #fbf8f0; border-radius: 3px; padding: 11px 12px; margin-bottom: 8px; }
-.concept.clickable { cursor: pointer; }
-.concept.clickable:hover { border-color: var(--press-ink); }
-.concept .term-row { display: flex; align-items: baseline; gap: 7px; flex-wrap: wrap; margin-bottom: 5px; }
-.concept .term { font-family: 'Noto Serif KR', serif; font-weight: 700; font-size: 13px; background: linear-gradient(transparent 62%, var(--marker-soft) 62%); padding: 0 1px; }
+.concept { border: 1px solid #d5cdb6; background: #fbf8f0; border-radius: 3px; padding: 12px 13px; margin-bottom: 9px; }
+.concept.clickable { cursor: pointer; transition: border-color .15s, box-shadow .15s; }
+.concept.clickable:hover { border-color: var(--press-ink); box-shadow: 0 2px 8px rgba(36, 86, 196, .15); }
+.concept .term-row { display: flex; align-items: baseline; gap: 7px; flex-wrap: wrap; margin-bottom: 6px; }
+.concept .term { font-family: 'Noto Serif KR', serif; font-weight: 700; font-size: 13.5px; background: linear-gradient(transparent 62%, var(--marker-soft) 62%); padding: 0 1px; }
 .concept .ktype { font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 20px; letter-spacing: .3px; }
 .ktype.doc { background: #e7efe3; color: #3d6b45; }
 .ktype.gen { background: #eee7d5; color: #8a6d1f; }
-.concept .expl { font-size: 12px; line-height: 1.7; color: #33302a; }
-.concept .why { font-size: 11px; line-height: 1.65; color: #6b6250; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e0d8c2; }
+.concept .expl { font-size: 12px; line-height: 1.75; color: #33302a; }
+.concept .why { font-size: 11px; line-height: 1.65; color: #6b6250; margin-top: 7px; padding-top: 7px; border-top: 1px dashed #e0d8c2; }
 .concept .why b { color: #4a3d00; }
-.concept .find { font-size: 10px; color: var(--press-ink); margin-top: 5px; }
+.concept .find { display: inline-block; font-size: 10.5px; font-weight: 700; color: #fff; background: var(--press-ink); border-radius: 20px; padding: 3px 11px; margin-top: 9px; }
+.concept.clickable:hover .find { background: var(--press-btn); }
 
-.path-item { display: flex; gap: 9px; margin-bottom: 9px; }
+.path-item { display: flex; gap: 9px; margin-bottom: 10px; }
 .path-num { flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%; background: var(--press-ink); color: #fff; font-weight: 700; font-size: 10.5px; display: flex; align-items: center; justify-content: center; }
-.path-body { font-size: 12px; line-height: 1.65; padding-top: 1px; }
+.path-body { font-size: 12px; line-height: 1.7; padding-top: 1px; }
 .path-body .step { font-weight: 700; }
 .path-body .notice { color: #5c5446; }
 
-.takeaway { display: block; margin-top: 20px; padding: 12px; background: linear-gradient(transparent 8%, rgba(255,217,74,.38) 8%, rgba(255,217,74,.38) 92%, transparent 92%); font-family: 'Noto Serif KR', serif; font-size: 12.5px; line-height: 1.8; }
-.takeaway .label { display: block; font-family: inherit; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; margin-bottom: 5px; color: #7a6410; }
+.takeaway { display: block; margin-top: 22px; padding: 13px; background: linear-gradient(transparent 8%, rgba(255,217,74,.38) 8%, rgba(255,217,74,.38) 92%, transparent 92%); font-family: 'Noto Serif KR', serif; font-size: 12.5px; line-height: 1.85; }
+.takeaway .label { display: block; font-family: 'IBM Plex Sans KR', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; margin-bottom: 6px; color: #7a6410; }
 
 .disclaimer { margin-top: 10px; font-size: 10px; color: #6b7189; line-height: 1.6; }
 
+/* ── 설정 ──────────────────────────────────────── */
 .settings { margin-top: 14px; background: var(--night-soft); border: 1px solid var(--line); border-radius: 8px; }
 .settings summary { cursor: pointer; padding: 8px 12px; font-size: 11px; color: var(--dim); list-style: none; }
 .settings summary::before { content: "▸ "; }

@@ -240,7 +240,7 @@ async function renderResult(d) {
       </div>
       <div class="expl"></div>
       <div class="why"><b>이 글에서 중요한 이유</b> · <span></span></div>
-      ${inPage ? '<div class="find">↥ 본문에서 이 용어 찾기</div>' : ''}`;
+      ${inPage ? '<span class="find">본문에서 찾기 ↥</span>' : ''}`;
     card.querySelector('.term').textContent = c.term;
     card.querySelector('.expl').textContent = c.explanation;
     card.querySelector('.why span').textContent = c.why_it_matters_here;
