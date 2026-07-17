@@ -116,7 +116,9 @@ python -m pytest tests/ -q
 5. ~~**크롬 확장**~~ ✅ 완료 (v0.4) — `extension/` MV3 사이드패널. 본문 추출 → `/api/transform/stream` →
    패널 렌더링 + 개념 용어 본문 형광펜 하이라이트(카드 클릭 시 해당 위치로 스크롤).
    +추출 고도화(Readability.js 번들) +리더 뷰("광고 없이 읽기" — 새 탭 2단, 이미지 포함, storage.session).
-   +아이콘(책갈피 리본 PNG 16/32/48/128, `extension/icons/`). 남은 것: 웹스토어 배포.
+   +아이콘(책갈피 리본 PNG 16/32/48/128, `extension/icons/`).
+   웹스토어 배포는 준비 완료 상태로 **보류** (`docs/webstore.md`, `PRIVACY.md`, dist zip) —
+   로컬 서버 전제라 일반 사용자가 쓸 수 없어, 서버 호스팅+요청 제한을 갖춘 뒤 제출하기로 결정 (2026-07).
 6. **web search 그라운딩**: 최신 사건 배경을 검색 결과에 근거시켜 컷오프 환각 리스크 제거.
 7. **결과 내보내기**: 브리핑을 마크다운/이미지로 저장·공유.
 8. **H1 검증 실험 지원**: `experiments/prototype-3-context-test.md`의 브리핑 유/무 이해도 비교 (뉴스 기사로).
